@@ -1,5 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
+import recordRoutes from "./routes/record.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -15,5 +17,7 @@ app.get("/", (req, res) => {
 // Routes
 
 app.use("/api/auth", authRoutes);
+app.use("/api/records", recordRoutes);
+app.use("/api/users", userRoutes);
 
 export default app;
