@@ -1,5 +1,8 @@
 import Record from "../models/record.model.js";
 
+const buildRecordFilter = (userId) =>
+  userId ? { userId, isDeleted: false } : { isDeleted: false };
+
 export const createRecord = async (data, userId) => {
   return await Record.create({ ...data, userId });
 };
@@ -7,7 +10,7 @@ export const createRecord = async (data, userId) => {
 export const getRecords = async (query, userId) => {
   const { type, category, startDate, endDate, page = 1, limit = 10 } = query;
 
-  let filter = { userId, isDeleted: false };
+  let filter = buildRecordFilter(userId);
 
   if (type) filter.type = type;
   if (category) filter.category = category;
@@ -37,7 +40,7 @@ export const getRecords = async (query, userId) => {
 };
 
 export const getRecordById = async (id, userId) => {
-  return await Record.findOne({ _id: id, userId, isDeleted: false });
+  return await Record.findOne({ _id: id, ...buildRecordFilter(userId) });
 };
 
 export const updateRecord = async (id, data) => {
@@ -55,8 +58,9 @@ export const updateRecord = async (id, data) => {
 };
 
 export const deleteRecord = async (id, userId) => {
-  await Record.findOneAndUpdate(
-    { _id: id, userId, isDeleted: false },
-    { isDeleted: true }
+  return await Record.findOneAndUpdate(
+    { _id: id, ...buildRecordFilter(userId) },
+    { isDeleted: true },
+    { returnDocument: "after" }
   );
 };

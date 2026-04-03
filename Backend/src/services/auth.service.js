@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const registerUser = async (data) => {
-  const { name, email, password } = data;
+  const { name, email, password, role } = data;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -16,6 +16,7 @@ export const registerUser = async (data) => {
     name,
     email,
     password: hashedPassword,
+    role: role === "analyst" ? "analyst" : "viewer",
   });
 
   return user;

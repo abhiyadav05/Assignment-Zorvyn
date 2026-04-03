@@ -13,9 +13,9 @@ import { validate } from "../middlewares/validate.middleware.js";
 
 const router = express.Router();
 
-// All roles can read
-router.get("/getall/", protect, getAll);
-router.get("/getbyid/:id", protect, getOne);
+// Analyst and admin can read records
+router.get("/getall/", protect, authorizeRoles("analyst", "admin"), getAll);
+router.get("/getbyid/:id", protect, authorizeRoles("analyst", "admin"), getOne);
 
 // Only admin can modify
 router.post("/create/", protect, authorizeRoles("admin"), createRecordValidator, validate, create);

@@ -1,12 +1,12 @@
 import Record from "../models/record.model.js";
 
+const buildMatch = (userId) =>
+  userId ? { userId, isDeleted: false } : { isDeleted: false };
+
 export const getSummary = async (userId) => {
   const result = await Record.aggregate([
     {
-      $match: {
-        userId,
-        isDeleted: false,
-      },
+      $match: buildMatch(userId),
     },
     {
       $group: {
@@ -37,10 +37,7 @@ export const getSummary = async (userId) => {
 export const getCategoryWise = async (userId) => {
   return await Record.aggregate([
     {
-      $match: {
-        userId,
-        isDeleted: false,
-      },
+      $match: buildMatch(userId),
     },
     {
       $group: {
@@ -59,10 +56,7 @@ export const getCategoryWise = async (userId) => {
 export const getTrends = async (userId) => {
   return await Record.aggregate([
     {
-      $match: {
-        userId,
-        isDeleted: false,
-      },
+      $match: buildMatch(userId),
     },
     {
       $group: {
@@ -79,10 +73,7 @@ export const getTrends = async (userId) => {
 // Recent Transactions
 
 export const getRecent = async (userId) => {
-  return await Record.find({
-    userId,
-    isDeleted: false,
-  })
+  return await Record.find(buildMatch(userId))
     .sort({ createdAt: -1 })
     .limit(5);
 };

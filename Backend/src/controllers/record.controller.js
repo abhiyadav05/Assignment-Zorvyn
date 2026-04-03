@@ -1,5 +1,7 @@
 import * as recordService from "../services/record.service.js";
 
+const getScopeUserId = (user) => (user?.role === "admin" ? undefined : user?._id);
+
 export const create = async (req, res) => {
   try {
     const record = await recordService.createRecord(req.body, req.user._id);
@@ -15,7 +17,10 @@ export const create = async (req, res) => {
 
 export const getAll = async (req, res) => {
   try {
-    const data = await recordService.getRecords(req.query, req.user._id);
+    const data = await recordService.getRecords(
+      req.query,
+      getScopeUserId(req.user)
+    );
 
     res.json({
       success: true,
@@ -28,10 +33,7 @@ export const getAll = async (req, res) => {
 
 export const getOne = async (req, res) => {
   try {
-    const record = await recordService.getRecordById(
-      req.params.id,
-      req.user._id
-    );
+    const record = await recordService.getRecordById(req.params.id, getScopeUserId(req.user));
 
     res.json({ success: true, data: record });
   } catch (error) {
@@ -61,7 +63,17 @@ export const update = async (req, res) => {
 
 export const remove = async (req, res) => {
   try {
-    await recordService.deleteRecord(req.params.id, req.user._id);
+    const deleted = await recordService.deleteRecord(
+      req.params.id,
+      getScopeUserId(req.user)
+    );
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Record not found",
+      });
+    }
 
     res.json({
       success: true,
